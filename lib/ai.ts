@@ -52,7 +52,7 @@ async function callDeepSeek(
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.4, // Lower = more consistent JSON
+      temperature: 0.8, // Higher = more varied output per input
       max_tokens: 2048,
     }),
   });

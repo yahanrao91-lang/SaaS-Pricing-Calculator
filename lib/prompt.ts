@@ -25,39 +25,66 @@ export interface PricingResult {
 }
 
 export function getPricingPrompt(input: PricingInput): string {
-  const competitorLine = input.competitorPrice
-    ? `Competitor monthly price: $${input.competitorPrice}`
-    : "Competitor price: unknown — estimate based on market norms";
+  const cost = input.monthlyCost;
+  const competitor = input.competitorPrice
+    ? `$${input.competitorPrice}/mo`
+    : "unknown";
 
-  return `You are a SaaS pricing strategist who has advised 500+ B2B and B2C SaaS companies.
+  // Calculate minimum viable price to guide the AI
+  const minViable = Math.round(cost * 3);
+  const suggestedPro = Math.round(cost * 5);
+  const suggestedBusiness = Math.round(cost * 10);
 
-## Product to analyze
+  return `You are a SaaS pricing strategist. Your task is to generate a unique, data-driven pricing strategy for a SPECIFIC product. The output MUST vary significantly based on the input numbers — different costs MUST produce different prices.
 
-- Product type: ${input.productType}
-- Target user: ${input.targetUser}
-- Monthly cost to run: $${input.monthlyCost}
-- ${competitorLine}
+## Product Data (USE THESE EXACT NUMBERS)
 
-## Rules
+- Product: ${input.productType}
+- Target users: ${input.targetUser}
+- Monthly running cost: $${cost}/mo
+- Competitor price: ${competitor}
 
-1. Suggest exactly 3 plans: Starter, Pro, and Business (or equivalent tiers).
-2. Price realistically — Starter should be accessible, Pro is the main revenue driver, Business captures enterprise.
-3. For indie-hacker / solo-founder products: Starter should be $9–29/mo, Pro $29–99/mo, Business $99–299/mo.
-4. For B2B / team tools: double those ranges.
-5. Every plan needs 3–5 concrete, differentiated features. Do NOT repeat features across plans.
-6. Revenue projections should be simple annualized math: price × users × 12, rounded.
-7. Strategy should give 3 actionable, specific recommendations — no generic advice like "focus on value."
-8. Warnings should flag real risks (e.g., "Your cost is too close to Starter price").
+## Pricing Formula (FOLLOW THIS)
 
-## Output format
+Your monthly cost is $${cost}. Price each tier as a healthy markup over cost:
 
-Reply with ONLY a valid JSON object. No markdown, no code fences, no preamble. Start with "{" and end with "}".
+- **Starter**: 3–4× cost = roughly $${minViable}–$${Math.round(cost * 4)}/mo
+  → DO NOT go below $${minViable}/mo or the business loses money
+- **Pro**: 5–7× cost = roughly $${suggestedPro}–$${Math.round(cost * 7)}/mo
+  → This is the anchor plan — make it the obvious best value
+- **Business**: 10–15× cost = roughly $${suggestedBusiness}–$${Math.round(cost * 15)}/mo
+  → Enterprise tier with premium features
+
+IMPORTANT: If competitor price is known (${competitor}), adjust your pricing relative to it. If you're cheaper, explain why. If you're more expensive, justify the premium.
+
+${input.competitorPrice && input.competitorPrice < minViable ? `⚠ WARNING: The competitor charges $${input.competitorPrice}/mo which is BELOW your minimum viable price of $${minViable}/mo. You MUST address this — either justify a premium position or warn the user they cannot compete on price alone.` : ""}
+
+## Revenue Projection (COMPUTE FROM PRO PLAN)
+
+Take the Pro plan price you chose, multiply by number of users, multiply by 12 months. Show annual revenue.
+Example math: if Pro = $50/mo, then 100 users = $50 × 100 × 12 = $60,000/year
+
+## Strategy & Warnings
+
+- Strategy: 3 specific, actionable steps tied to THIS product and THESE numbers. No generic advice.
+- Warnings: flag real risks based on the actual cost-to-price ratio. If cost is close to any plan price, warn about thin margins.
+
+## Output Rules
+
+1. Reply with ONLY valid JSON. No markdown, no code fences, no preamble.
+2. Prices MUST be calculated from the input cost using the formula above.
+3. If cost is $10 vs $1000, the output should look RADICALLY different.
+4. Each plan needs 3–5 features specific to "${input.productType}".
+5. DO NOT copy example numbers — compute fresh each time.
+6. Strategy items must reference specific numbers (e.g., "Your Pro plan at $X needs Y").
+
+## JSON Schema
 
 {
   "plans": [
-    { "name": "Starter", "price": "$X/mo", "features": ["...", "...", "..."] },
-    { "name": "Pro", "price": "$X/mo", "features": ["...", "...", "..."] },
-    { "name": "Business", "price": "$X/mo", "features": ["...", "...", "..."] }
+    { "name": "Starter", "price": "$X/mo", "features": ["..."] },
+    { "name": "Pro", "price": "$X/mo", "features": ["..."] },
+    { "name": "Business", "price": "$X/mo", "features": ["..."] }
   ],
   "revenue_projection": {
     "100_users": "$X/year",
@@ -66,31 +93,5 @@ Reply with ONLY a valid JSON object. No markdown, no code fences, no preamble. S
   },
   "strategy": ["...", "...", "..."],
   "warnings": ["...", "..."]
-}
-
-## Example output
-
-Input: AI writing tool for indie hackers, cost $200/mo, no competitor data
-Output:
-{
-  "plans": [
-    { "name": "Starter", "price": "$19/mo", "features": ["10,000 words/mo", "5 AI templates", "Basic export", "Email support"] },
-    { "name": "Pro", "price": "$49/mo", "features": ["Unlimited words", "50+ templates", "Priority AI generation", "API access", "Chat support"] },
-    { "name": "Business", "price": "$149/mo", "features": ["Everything in Pro", "Custom AI model", "Team seats (5)", "SSO", "Dedicated support"] }
-  ],
-  "revenue_projection": {
-    "100_users": "$58,800/year",
-    "500_users": "$294,000/year",
-    "1000_users": "$588,000/year"
-  },
-  "strategy": [
-    "Launch on Product Hunt with a lifetime deal to build initial user base",
-    "Add a usage-based add-on for heavy users instead of raising base prices",
-    "Publish pricing page with 'most popular' badge on Pro plan to anchor value"
-  ],
-  "warnings": [
-    "Starter plan at $19 barely covers costs — upsell path to Pro must be strong",
-    "No free tier means you need strong landing page social proof to convert"
-  ]
 }`;
 }
