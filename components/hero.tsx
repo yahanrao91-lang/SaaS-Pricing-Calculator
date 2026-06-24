@@ -3,24 +3,20 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen text-center px-6">
-      {/* Badge — social proof hint */}
-      <div className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-900 px-4 py-1.5 text-sm text-neutral-300 mb-8">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-        </span>
-        Built for indie hackers & early-stage founders
+      {/* Badge — urgency */}
+      <div className="inline-flex items-center gap-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-4 py-1.5 text-sm text-yellow-300 mb-8">
+        ⚠ Most indie hackers underprice by 30–50%
       </div>
 
       <h1 className="text-5xl font-bold tracking-tight sm:text-6xl max-w-3xl">
-        Stop guessing your{" "}
-        <span className="text-neutral-400">SaaS pricing.</span>
+        You&apos;re probably{" "}
+        <span className="text-red-400">underpricing</span> your SaaS.
       </h1>
 
       <p className="mt-6 text-lg text-neutral-400 max-w-xl leading-relaxed">
-        Describe your product in 30 seconds. Get a complete pricing strategy —
-        tiered plans, revenue projections, and actionable advice — backed by AI
-        analysis of thousands of successful SaaS products.
+        One pricing mistake can cost you $500–$2,000/month in lost revenue.
+        Describe your product in 30 seconds and see exactly what you should
+        charge — backed by AI analysis of thousands of successful SaaS products.
       </p>
 
       {/* CTA buttons */}
@@ -29,7 +25,7 @@ export default function Hero() {
           href="/tool"
           className="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-black hover:bg-neutral-200 transition-colors"
         >
-          Generate My Pricing Strategy
+          See What I Should Charge
           <span className="ml-2 text-sm text-neutral-500">— free</span>
         </Link>
         <a
@@ -40,19 +36,19 @@ export default function Hero() {
         </a>
       </div>
 
-      {/* Trust signals */}
+      {/* Trust signals — loss-framed */}
       <div className="mt-16 grid grid-cols-3 gap-8 text-center text-sm text-neutral-500">
         <div>
-          <p className="text-lg font-semibold text-neutral-300">30s</p>
-          <p>to get results</p>
+          <p className="text-lg font-semibold text-red-400">30–50%</p>
+          <p>average underpricing</p>
         </div>
         <div>
           <p className="text-lg font-semibold text-neutral-300">3 tiers</p>
-          <p>pricing plans</p>
+          <p>optimized for your cost</p>
         </div>
         <div>
-          <p className="text-lg font-semibold text-neutral-300">100%</p>
-          <p>free to try</p>
+          <p className="text-lg font-semibold text-neutral-300">30s</p>
+          <p>from input to strategy</p>
         </div>
       </div>
 
@@ -69,17 +65,17 @@ export default function Hero() {
             {
               step: "01",
               title: "Describe your product",
-              desc: "Tell us what you're building, who it's for, and your costs.",
+              desc: "Tell us what you're building, who it's for, and your monthly cost.",
             },
             {
               step: "02",
-              title: "AI analyzes the market",
-              desc: "Our model compares your inputs against proven SaaS pricing patterns.",
+              title: "AI analyzes your pricing gap",
+              desc: "Our model identifies how much revenue you're leaving on the table.",
             },
             {
               step: "03",
-              title: "Get your strategy",
-              desc: "Receive tiered plans, revenue projections, and actionable next steps.",
+              title: "Get your pricing blueprint",
+              desc: "Data-backed tiers, revenue projections, and what to fix today.",
             },
           ].map(({ step, title, desc }) => (
             <div

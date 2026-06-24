@@ -91,7 +91,7 @@ export default function ToolPage() {
         {/* Success state */}
         {status === "success" && result && (
           <>
-            <ResultCard data={result} />
+            <ResultCard data={result} free />
             <Paywall />
             <div className="mt-6 text-center">
               <button
