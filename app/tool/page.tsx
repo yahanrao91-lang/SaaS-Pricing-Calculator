@@ -12,6 +12,7 @@ type Status = "idle" | "loading" | "success" | "error";
 export default function ToolPage() {
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<PricingResult | null>(null);
+  const [lastInput, setLastInput] = useState<FormData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(data: FormData) {
@@ -37,6 +38,7 @@ export default function ToolPage() {
       }
 
       setResult(json);
+      setLastInput(data);
       setStatus("success");
     } catch (err) {
       const message =
@@ -91,7 +93,7 @@ export default function ToolPage() {
         {/* Success state */}
         {status === "success" && result && (
           <>
-            <ResultCard data={result} />
+            <ResultCard data={result} input={lastInput ?? undefined} />
             <Paywall />
             <div className="mt-6 text-center">
               <button

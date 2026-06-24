@@ -1,15 +1,48 @@
 import type { PricingResult } from "@/lib/prompt";
+import type { FormData } from "@/components/pricing-form";
 
 interface Props {
   data: PricingResult;
+  input?: FormData;
 }
 
-export default function ResultCard({ data }: Props) {
+export default function ResultCard({ data, input }: Props) {
   const plans = data.plans;
   const revenueEntries = Object.entries(data.revenue_projection);
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
+      {/* ── Analysis Summary ── */}
+      {input && (
+        <section className="rounded-xl border border-neutral-700 bg-neutral-950 p-5">
+          <h2 className="text-sm font-semibold text-neutral-400 mb-3">
+            Analysis based on:
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div>
+              <p className="text-neutral-500">Product</p>
+              <p className="font-medium">{input.productType}</p>
+            </div>
+            <div>
+              <p className="text-neutral-500">Target</p>
+              <p className="font-medium">{input.targetUser}</p>
+            </div>
+            <div>
+              <p className="text-neutral-500">Monthly Cost</p>
+              <p className="font-medium">${Number(input.monthlyCost).toLocaleString()}/mo</p>
+            </div>
+            <div>
+              <p className="text-neutral-500">Competitor</p>
+              <p className="font-medium">
+                {input.competitorPrice
+                  ? `$${Number(input.competitorPrice).toLocaleString()}/mo`
+                  : "Unknown — estimated"}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Section: Plans */}
       <section>
         <h2 className="text-2xl font-bold mb-4">Your Pricing Plans</h2>
@@ -47,6 +80,9 @@ export default function ResultCard({ data }: Props) {
       {/* Section: Revenue Projection */}
       <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
         <h2 className="text-xl font-bold mb-4">Revenue Projections</h2>
+        <p className="text-xs text-neutral-500 -mt-3 mb-4">
+          Based on the Pro plan price × number of users × 12 months
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
           {revenueEntries.map(([users, revenue]) => (
             <div key={users}>
